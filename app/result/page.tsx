@@ -138,14 +138,19 @@ export default function ResultPage() {
   const deadlineStatusLabel = deadlineUrgency === 'NONE' ? 'No deadline' : deadlineUrgency
   const deadlineStatusColor = deadlineUrgency === 'CRITICAL' ? 'var(--red)' : deadlineUrgency === 'HIGH' ? 'var(--orange)' : deadlineUrgency === 'MEDIUM' ? 'var(--yellow)' : deadlineUrgency === 'LOW' ? 'var(--green)' : 'var(--ink-3)'
   const deadlineLabel = analysis.deadline || (extractedDeadlineDate ? 'Exact deadline detected' : 'No confirmed deadline detected.')
- const deadlineSummary =
-  daysRemaining === null
-    ? 'No deadline detected.'
-    : daysRemaining < 0
-      ? `Deadline passed ${Math.abs(daysRemaining)} day${Math.abs(daysRemaining) === 1 ? '' : 's'} ago.`
-      : daysRemaining === 0
-        ? 'Due today.'
-        : `${daysRemaining} day${daysRemaining === 1 ? '' : 's'} remaining.`;
+let deadlineSummary = 'No deadline detected.'
+
+if (daysRemaining !== null) {
+  if (daysRemaining < 0) {
+    deadlineSummary =
+      `Deadline passed ${Math.abs(daysRemaining)} day${Math.abs(daysRemaining) === 1 ? '' : 's'} ago.`
+  } else if (daysRemaining === 0) {
+    deadlineSummary = 'Due today.'
+  } else {
+    deadlineSummary =
+      `${daysRemaining} day${daysRemaining === 1 ? '' : 's'} remaining.`
+  }
+}
 
 return (
     <div style={{ minHeight:'100dvh', background:'var(--bg)' }}>
