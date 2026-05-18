@@ -139,7 +139,7 @@ export default function ResultPage() {
   const deadlineStatusColor = deadlineUrgency === 'CRITICAL' ? 'var(--red)' : deadlineUrgency === 'HIGH' ? 'var(--orange)' : deadlineUrgency === 'MEDIUM' ? 'var(--yellow)' : deadlineUrgency === 'LOW' ? 'var(--green)' : 'var(--ink-3)'
   const deadlineLabel = analysis.deadline || (extractedDeadlineDate ? 'Exact deadline detected' : 'No confirmed deadline detected.')
         const deadlineSummary =
-  daysRemaining === null
+   daysRemaining === null
     ? 'No deadline detected.'
     : daysRemaining < 0
       ? `Deadline passed ${Math.abs(daysRemaining)} day${Math.abs(daysRemaining) === 1 ? '' : 's'} ago.`
