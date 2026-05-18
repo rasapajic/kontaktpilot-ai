@@ -141,14 +141,11 @@ export default function ResultPage() {
 const deadlineSummary =
   daysRemaining === null
     ? 'No deadline detected.'
-    : (
-        daysRemaining < 0
-          ? `Deadline passed ${Math.abs(daysRemaining)} day${Math.abs(daysRemaining) === 1 ? '' : 's'} ago.`
-          : daysRemaining === 0
-            ? 'Due today.'
-            : `${daysRemaining} day${daysRemaining === 1 ? '' : 's'} remaining.`
-      );
-  return (
+    : daysRemaining < 0
+      ? `Deadline passed ${Math.abs(daysRemaining)} day${Math.abs(daysRemaining) === 1 ? '' : 's'} ago.`
+      : daysRemaining === 0
+        ? 'Due today.'
+        : `${daysRemaining} day${daysRemaining === 1 ? '' : 's'} remaining.`;
     <div style={{ minHeight:'100dvh', background:'var(--bg)' }}>
       <div className="topbar">
         <div style={{ display:'flex', alignItems:'center', gap:10 }}>
