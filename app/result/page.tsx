@@ -146,7 +146,6 @@ export default function ResultPage() {
       : daysRemaining === 0
         ? 'Due today.'
         : `${daysRemaining} day${daysRemaining === 1 ? '' : 's'} remaining.`;
-
   return (
     <div style={{ minHeight:'100dvh', background:'var(--bg)' }}>
       <div className="topbar">
