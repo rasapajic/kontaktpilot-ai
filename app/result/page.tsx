@@ -282,7 +282,7 @@ export default function ResultPage() {
           </div>
         </div>
 
-        {analysis.qualityWarnings?.length > 0 && (
+        {(analysis as any).qualityWarnings?.length > 0 && (
           <div className="anim-up card" style={{ marginBottom:12, border:'1px solid var(--rim)' }}>
             <div style={{ padding:'22px 22px' }}>
               <p style={{ fontSize:'1rem', fontWeight:700, color:'var(--ink)', marginBottom:10 }}>Quality warnings</p>
