@@ -150,7 +150,6 @@ if (daysRemaining !== null) {
     deadlineSummary =
       `${daysRemaining} day${daysRemaining === 1 ? '' : 's'} remaining.`
   }
-}
 
 return (
     <div style={{ minHeight:'100dvh', background:'var(--bg)' }}>
