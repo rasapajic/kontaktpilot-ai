@@ -55,9 +55,12 @@ export default function ResultPage() {
     }
 
     const language = analysis.documentLanguage || 'English'
-    const context = `The letter is from ${analysis.sender}. It looks like: ${analysis.summary}.` +
-      (analysis.deadline ? ` The letter mentions a deadline of ${analysis.deadline}.` : '') +
-      (analysis as any).qualityWarnings?.length ? ` Note: the document may be incomplete or unclear.` : '')
+    
+     const context = `The letter is from ${analysis.sender}. It looks like: ${analysis.summary}.` +
+  (analysis.deadline ? ` The letter mentions a deadline of ${analysis.deadline}.` : '') +
+  (((analysis as any).qualityWarnings?.length)
+    ? ` Note: the document may be incomplete or unclear.`
+    : '')
 
     try {
       const response = await fetch('/api/ai', {
