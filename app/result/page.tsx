@@ -234,18 +234,22 @@ export default function ResultPage() {
           </div>
         </div>
 
-        {analysis.qualityWarnings?.length > 0 && (
+        {(analysis as any).qualityWarnings?.length > 0 && (
           <div className="anim-up card" style={{ marginBottom:12, border:'1px solid var(--rim)' }}>
             <div style={{ padding:'22px 22px' }}>
               <p style={{ fontSize:'1rem', fontWeight:700, color:'var(--ink)', marginBottom:10 }}>Quality warnings</p>
               <div style={{ display:'grid', gap:8 }}>
-                {analysis.qualityWarnings.map((warning, index) => (
-                  <p key={index} style={{ fontSize:'1rem', color:'var(--ink)', lineHeight:1.6 }}>• {warning}</p>
-                ))}
-              </div>
+               {(((analysis as any).qualityWarnings) || []).map((warning: string, index: number) => (
+  <p
+    key={index}
+    style={{ fontSize:'1rem', color:'var(--ink)', lineHeight:1.6 }}
+  >
+    • {warning}
+  </p>
+))}
             </div>
           </div>
-        )}
+        }
 
         {(analysis.confidenceExplanation || analysis.senderConfidence < 70) && (
           <div className="anim-up card" style={{ marginBottom:12, border:'1px solid var(--rim)' }}>
