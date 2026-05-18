@@ -144,7 +144,7 @@ export default function ResultPage() {
     ? `Deadline passed ${Math.abs(daysRemaining)} day${Math.abs(daysRemaining) === 1 ? '' : 's'} ago.`
     : daysRemaining === 0
       ? 'Due today.'
-      : `${daysRemaining} day${daysRemaining === 1 ? '' : 's'} remaining.`
+      : `${daysRemaining} day${daysRemaining === 1 ? '' : 's'} remaining.`;
 
   return (
     <div style={{ minHeight:'100dvh', background:'var(--bg)' }}>
