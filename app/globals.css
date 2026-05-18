@@ -1,0 +1,413 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Instrument+Serif:ital@0;1&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ════════════════════════════════════════════
+   TOKENS — warm, calm, human
+════════════════════════════════════════════ */
+:root {
+  /* Backgrounds — warm off-white, never clinical */
+  --bg:          #F6F3EE;
+  --bg-card:     #FFFFFF;
+  --bg-raised:   #FFFFFF;
+  --bg-subtle:   #EDE9E0;
+  --bg-deep:     #E4DFD4;
+
+  /* Ink */
+  --ink:         #1E1B16;
+  --ink-2:       #4A4640;
+  --ink-3:       #8A8680;
+  --ink-4:       #C4BFB8;
+
+  /* Brand warm gold */
+  --gold:        #C8A84A;
+  --gold-2:      #E8CC7A;
+  --gold-3:      #FBF6E6;
+  --gold-4:      #9A7C2C;
+
+  /* Status — emotionally calibrated */
+  --green:       #2E7D52;
+  --green-bg:    #EDF7F2;
+  --green-rim:   #A8D8BC;
+
+  --yellow:      #8A6000;
+  --yellow-bg:   #FFFBEB;
+  --yellow-rim:  #F0D080;
+
+  --orange:      #A04800;
+  --orange-bg:   #FFF5EB;
+  --orange-rim:  #F0A860;
+
+  --red:         #9A2828;
+  --red-bg:      #FEF2F2;
+  --red-rim:     #F0A0A0;
+
+  /* Borders */
+  --rim:         #DDD8CF;
+  --rim-2:       #EAE6DF;
+
+  /* Radii */
+  --r-sm:   10px;
+  --r:      16px;
+  --r-md:   20px;
+  --r-lg:   28px;
+  --r-xl:   36px;
+
+  /* Shadows */
+  --sh-sm: 0 1px 3px rgba(30,27,22,.06), 0 1px 2px rgba(30,27,22,.04);
+  --sh-md: 0 4px 16px rgba(30,27,22,.08), 0 2px 4px rgba(30,27,22,.04);
+  --sh-lg: 0 8px 32px rgba(30,27,22,.10), 0 4px 8px rgba(30,27,22,.05);
+  --sh-xl: 0 16px 48px rgba(30,27,22,.12), 0 8px 16px rgba(30,27,22,.06);
+}
+
+/* Dark mode — same warm feel, not cold */
+.dark {
+  --bg:        #181510;
+  --bg-card:   #221E18;
+  --bg-raised: #2A2620;
+  --bg-subtle: #2E2A24;
+  --bg-deep:   #252118;
+  --ink:       #F2EDE4;
+  --ink-2:     #B8B0A4;
+  --ink-3:     #787068;
+  --ink-4:     #403C36;
+  --rim:       #38342C;
+  --rim-2:     #302C24;
+
+  --green-bg:  #0E2018;
+  --green-rim: #1E4030;
+  --yellow-bg: #201800;
+  --yellow-rim:#402E00;
+  --orange-bg: #201000;
+  --orange-rim:#402000;
+  --red-bg:    #200808;
+  --red-rim:   #401010;
+}
+
+/* ════════════════════════════════════════════
+   RESET + BASE
+════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; padding: 0; margin: 0; }
+
+html {
+  /* 18px — readable for older eyes, non-technical users */
+  font-size: 18px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+  text-size-adjust: 100%;
+}
+
+body {
+  font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.65;
+  min-height: 100dvh;
+}
+
+/* ════════════════════════════════════════════
+   TYPOGRAPHY
+════════════════════════════════════════════ */
+.serif { font-family: 'Instrument Serif', Georgia, serif; }
+
+/* Fluid hero headline */
+.t-hero {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: clamp(2.2rem, 7vw, 3.8rem);
+  line-height: 1.07;
+  letter-spacing: -0.025em;
+  font-weight: 400;
+}
+
+.t-section {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  font-weight: 400;
+}
+
+.t-card-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.t-body   { font-size: 1rem;    line-height: 1.7; }
+.t-small  { font-size: .9rem;   line-height: 1.6; }
+.t-tiny   { font-size: .75rem;  line-height: 1.5; }
+
+.t-label {
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+/* Gold shimmer */
+.shimmer {
+  background: linear-gradient(90deg, var(--gold) 0%, var(--gold-2) 40%, var(--gold) 60%, var(--gold-4) 100%);
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: _shimmer 3.5s linear infinite;
+}
+
+/* ════════════════════════════════════════════
+   ANIMATIONS — gentle, never jarring
+════════════════════════════════════════════ */
+@keyframes _fadeUp  { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+@keyframes _fadeIn  { from { opacity:0; } to { opacity:1; } }
+@keyframes _slideUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+@keyframes _spin    { to { transform: rotate(360deg); } }
+@keyframes _pulse   { 0%,100% { opacity:1; } 50% { opacity:.5; } }
+@keyframes _shimmer { 0% { background-position:-200% center; } 100% { background-position:200% center; } }
+@keyframes _breathe { 0%,100% { transform:scale(1); } 50% { transform:scale(1.03); } }
+
+.anim-up   { animation: _fadeUp  .6s cubic-bezier(.22,1,.36,1) both; }
+.anim-in   { animation: _fadeIn  .45s ease both; }
+.anim-slide{ animation: _slideUp .4s cubic-bezier(.22,1,.36,1) both; }
+.anim-spin { animation: _spin    1s linear infinite; }
+.anim-pulse{ animation: _pulse   2s ease-in-out infinite; }
+.anim-breathe { animation: _breathe 3s ease-in-out infinite; }
+
+.d1 { animation-delay:.10s; }
+.d2 { animation-delay:.20s; }
+.d3 { animation-delay:.30s; }
+.d4 { animation-delay:.40s; }
+.d5 { animation-delay:.50s; }
+.d6 { animation-delay:.65s; }
+
+/* ════════════════════════════════════════════
+   LAYOUT
+════════════════════════════════════════════ */
+.wrap {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* ════════════════════════════════════════════
+   BUTTONS — huge, accessible, warm
+════════════════════════════════════════════ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  /* 60px minimum — designed for older fingers */
+  min-height: 60px;
+  padding: 16px 28px;
+  border: none;
+  border-radius: var(--r-lg);
+  font-family: inherit;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform .14s, opacity .14s, background .15s, box-shadow .15s;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  white-space: nowrap;
+}
+.btn:active  { transform: scale(.97); }
+.btn:disabled { opacity:.42; cursor:not-allowed; pointer-events:none; }
+.btn:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+
+/* Primary — main CTA */
+.btn-primary { background: var(--ink); color: var(--bg); }
+.btn-primary:hover { opacity:.88; }
+.dark .btn-primary { background: var(--bg-raised); color: var(--ink); }
+
+/* Gold — upgrade/featured */
+.btn-gold { background: var(--gold); color: #1E1B16; }
+.btn-gold:hover { background: var(--gold-4); color: #fff; }
+
+/* Outline */
+.btn-outline {
+  background: transparent;
+  color: var(--ink-2);
+  border: 1.5px solid var(--rim);
+}
+.btn-outline:hover { background: var(--bg-subtle); color: var(--ink); }
+
+/* Ghost */
+.btn-ghost { background: transparent; color: var(--ink-2); min-height: 44px; }
+.btn-ghost:hover { background: var(--bg-subtle); color: var(--ink); }
+
+/* Size variants */
+.btn-xl  { min-height:72px; padding:20px 36px; font-size:1.15rem; border-radius:var(--r-xl); }
+.btn-sm  { min-height:44px; padding:10px 20px; font-size:.9rem;   border-radius:var(--r); }
+.btn-xs  { min-height:36px; padding:6px  14px; font-size:.8rem;   border-radius:var(--r-sm); }
+.btn-full { width:100%; }
+
+/* ════════════════════════════════════════════
+   INPUTS
+════════════════════════════════════════════ */
+.input {
+  width: 100%;
+  background: var(--bg-card);
+  border: 2px solid var(--rim);
+  border-radius: var(--r);
+  padding: 18px 20px;
+  font-family: inherit;
+  font-size: 1rem;
+  color: var(--ink);
+  line-height: 1.6;
+  outline: none;
+  transition: border-color .15s, box-shadow .15s;
+  -webkit-appearance: none;
+}
+.input::placeholder { color: var(--ink-4); }
+.input:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 4px rgba(200,168,74,.14);
+}
+textarea.input { resize: none; }
+
+select.input {
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' viewBox='0 0 24 24'%3E%3Cpath stroke='%238A8680' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  padding-right: 48px;
+}
+
+/* ════════════════════════════════════════════
+   CARDS
+════════════════════════════════════════════ */
+.card {
+  background: var(--bg-card);
+  border: 1.5px solid var(--rim-2);
+  border-radius: var(--r-md);
+  box-shadow: var(--sh-sm);
+}
+
+.card-p  { padding: 24px; }
+.card-pl { padding: 28px 32px; }
+
+/* ════════════════════════════════════════════
+   STATUS CARDS — the emotional heart of the UI
+════════════════════════════════════════════ */
+.status-green  { background:var(--green-bg);  border:2px solid var(--green-rim); }
+.status-yellow { background:var(--yellow-bg); border:2px solid var(--yellow-rim); }
+.status-orange { background:var(--orange-bg); border:2px solid var(--orange-rim); }
+.status-red    { background:var(--red-bg);    border:2px solid var(--red-rim); }
+
+/* ════════════════════════════════════════════
+   UPLOAD ZONE — inviting, not intimidating
+════════════════════════════════════════════ */
+.upload-zone {
+  border: 2.5px dashed var(--rim);
+  border-radius: var(--r-lg);
+  background: var(--bg-card);
+  padding: 40px 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color .2s, background .2s, transform .15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.upload-zone:hover,
+.upload-zone:focus-visible,
+.upload-zone.drag-over {
+  border-color: var(--gold);
+  background: var(--gold-3);
+  transform: scale(1.01);
+}
+
+/* ════════════════════════════════════════════
+   TRUST BADGE
+════════════════════════════════════════════ */
+.trust-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px 20px;
+}
+.trust-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: .82rem;
+  color: var(--ink-3);
+  font-weight: 500;
+}
+
+/* ════════════════════════════════════════════
+   PROGRESS DOTS
+════════════════════════════════════════════ */
+.dot { width:8px; height:8px; border-radius:50%; background:var(--rim); transition:.2s; }
+.dot.on { background:var(--gold); transform:scale(1.35); }
+.dot.done { background:var(--green); }
+
+/* ════════════════════════════════════════════
+   TOP BAR — minimal
+════════════════════════════════════════════ */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: 62px;
+  background: color-mix(in srgb, var(--bg) 90%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--rim-2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+}
+
+/* ════════════════════════════════════════════
+   LANGUAGE PILLS
+════════════════════════════════════════════ */
+.lang-pill {
+  padding: 8px 16px;
+  border-radius: var(--r);
+  border: 1.5px solid var(--rim);
+  font-size: .88rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: .14s;
+  background: var(--bg-card);
+  color: var(--ink-2);
+  -webkit-tap-highlight-color: transparent;
+}
+.lang-pill:hover  { border-color: var(--gold); color: var(--ink); }
+.lang-pill.active { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.dark .lang-pill.active { background: var(--bg-raised); color: var(--ink); }
+
+/* ════════════════════════════════════════════
+   GENTLE BACKGROUND PATTERN
+════════════════════════════════════════════ */
+.bg-pattern {
+  background-image: radial-gradient(circle, rgba(30,27,22,.045) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+.dark .bg-pattern {
+  background-image: radial-gradient(circle, rgba(242,237,228,.03) 1px, transparent 1px);
+}
+
+/* ════════════════════════════════════════════
+   SCROLL & FOCUS
+════════════════════════════════════════════ */
+:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; border-radius: 4px; }
+::selection { background: rgba(200,168,74,.22); }
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-thumb { background: var(--rim); border-radius: 2px; }
+
+/* ════════════════════════════════════════════
+   LOADING SKELETON
+════════════════════════════════════════════ */
+@keyframes _skeleton { 0%,100% { opacity:.5; } 50% { opacity:1; } }
+.skeleton {
+  background: var(--bg-subtle);
+  border-radius: var(--r-sm);
+  animation: _skeleton 1.6s ease-in-out infinite;
+}
