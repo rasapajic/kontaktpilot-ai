@@ -123,9 +123,9 @@ export default function ResultPage() {
   const extractedDeadlineDate = analysis.extractedDeadlineDate || analysis.deadlineDate || null
   const parsedDeadline = extractedDeadlineDate ? new Date(`${extractedDeadlineDate}T00:00:00Z`) : null
   const parsedDeadlineValid = parsedDeadline ? !Number.isNaN(parsedDeadline.getTime()) : false
-  const defaultDaysRemaining = parsedDeadlineValid
-    ? Math.round((parsedDeadline.getTime() - new Date().setHours(0, 0, 0, 0)) / (1000 * 60 * 60 * 24))
-    : null
+  const defaultDaysRemaining = parsedDeadlineValid && parsedDeadline
+  ? Math.round((parsedDeadline.getTime() - new Date().setHours(0, 0, 0, 0)) / (1000 * 60 * 60 * 24))
+  : null
   const daysRemaining = typeof analysis.daysRemaining === 'number' ? analysis.daysRemaining : defaultDaysRemaining
   const deadlineUrgency = analysis.deadlineUrgency || (
     daysRemaining === null ? 'NONE' :
