@@ -312,7 +312,7 @@ export default function ResultPage() {
           <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
             <div>
               <p style={{ fontSize:'1rem', fontWeight:700, color:'var(--ink)', marginBottom:10 }}>Need help replying?</p>
-              <p style={{ fontSize:'.95rem', color:'var(--ink-2)', lineHeight:1.7' }}>
+              <p style={{ fontSize:'.95rem', color:'var(--ink-2)', lineHeight:1.7 }}>
                 Choose one of the short reply options below and I will generate a calm, polite response in the detected language.
               </p>
             </div>
