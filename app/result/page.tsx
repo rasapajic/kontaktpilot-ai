@@ -142,10 +142,10 @@ export default function ResultPage() {
   daysRemaining === null
     ? 'No deadline detected.'
     : daysRemaining < 0
-      ? `Deadline passed ${Math.abs(daysRemaining)} day${Math.abs(daysRemaining) === 1 ? '' : 's'} ago.`
-      146 : (daysRemaining === 0
-147     ? 'Due today.'
-148     : `${daysRemaining} day${daysRemaining === 1 ? '' : 's'} remaining.`);
+    ? `Deadline passed ${Math.abs(daysRemaining)} day${Math.abs(daysRemaining) === 1 ? '' : 's'} ago.`
+    : (daysRemaining === 0
+    ? 'Due today.'
+    : `${daysRemaining} day${daysRemaining === 1 ? '' : 's'} remaining.`);
 
 return (
     <div style={{ minHeight:'100dvh', background:'var(--bg)' }}>
