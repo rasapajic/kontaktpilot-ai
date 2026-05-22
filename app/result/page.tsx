@@ -146,20 +146,19 @@ let deadlineSummary = 'No deadline detected.';
 if (daysRemaining !== null) {
   if (daysRemaining < 0) {
     deadlineSummary =
-      `Deadline passed ${Math.abs(daysRemaining)} day${Math.abs(daysRemaining) === 1 ? '' : 's'} ago.`;
+      'Deadline passed ' + Math.abs(daysRemaining) + ' day(s) ago.';
   } else if (daysRemaining === 0) {
-  deadlineSummary = 'Due today.';
-} else {
+    deadlineSummary = 'Due today.';
+  } else {
     deadlineSummary =
-      `${daysRemaining} day${daysRemaining === 1 ? '' : 's'} remaining.`;
+      daysRemaining + ' day(s) remaining.';
   }
 }
-
 return (
-    <div style={{ minHeight:'100dvh', background:'var(--bg)' }}>
+    <div style={{ minHeight:'100dvh', background:'var(--bg)' }>
       <div className="topbar">
         <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-          <button onClick={() => router.push('/check')} aria-label="Go back"
+          <btton onClick={() => router.push('/check')} aria-label="Go back"
             style={{ width:40, height:40, display:'flex', alignItems:'center', justifyContent:'center', background:'transparent', border:'none', borderRadius:10, cursor:'pointer', color:'var(--ink-3)' }}>
             <RotateCcw size={18} />
           </button>
