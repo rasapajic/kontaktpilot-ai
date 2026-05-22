@@ -154,6 +154,7 @@ if (daysRemaining !== null) {
       daysRemaining + ' day(s) remaining.';
   }
 }
+
 return (
     <div style={{ minHeight:'100dvh', background:'var(--bg)' }>
       <div className="topbar">
