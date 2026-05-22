@@ -148,8 +148,8 @@ if (daysRemaining !== null) {
     deadlineSummary =
       `Deadline passed ${Math.abs(daysRemaining)} day${Math.abs(daysRemaining) === 1 ? '' : 's'} ago.`;
   } else if (daysRemaining === 0) {
-    deadlineSummary = 'Due today.';
-  } else {
+  deadlineSummary = 'Due today.';
+} else {
     deadlineSummary =
       `${daysRemaining} day${daysRemaining === 1 ? '' : 's'} remaining.`;
   }
