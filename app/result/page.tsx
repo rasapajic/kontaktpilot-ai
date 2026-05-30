@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -31,11 +31,11 @@ export default function ResultPage() {
   const [copied, setCopied] = useState(false)
 
   const replyActions: { id: ReplyActionId; label: string; note: string }[] = [
-    { id: 'more_time', label: 'Ask for more time', note: 'Ask politely for more time to respond.' },
-    { id: 'already_paid', label: 'I already paid', note: 'Tell them you already paid and ask them to confirm receipt.' },
-    { id: 'disagree', label: 'I disagree', note: 'Say you disagree and ask them to explain why.' },
-    { id: 'clarify', label: 'Request clarification', note: 'Ask for more details or missing information.' },
-    { id: 'general', label: 'General polite reply', note: 'Send a calm request for next steps.' },
+    { id: 'more_time',    label: 'Ask for more time',     note: 'Ask politely for more time to respond.' },
+    { id: 'already_paid', label: 'I already paid',        note: 'Tell them you already paid and ask them to confirm receipt.' },
+    { id: 'disagree',     label: 'I disagree',            note: 'Say you disagree and ask them to explain why.' },
+    { id: 'clarify',      label: 'Request clarification', note: 'Ask for more details or missing information.' },
+    { id: 'general',      label: 'General polite reply',  note: 'Send a calm request for next steps.' },
   ]
 
   async function generateReply(action: ReplyActionId) {
@@ -46,25 +46,22 @@ export default function ResultPage() {
     setReplyResult(null)
     setCopied(false)
 
-    const actionText: Record<ReplyActionId,string> = {
-      more_time: 'Ask politely for more time to respond, without apologizing too much.',
+    const actionText: Record<ReplyActionId, string> = {
+      more_time:    'Ask politely for more time to respond, without apologizing too much.',
       already_paid: 'Explain that you already paid and ask them to confirm receipt politely.',
-      disagree: 'Say you disagree with the request and ask them to explain the reason clearly.',
-      clarify: 'Ask for more information and clarification in a calm and polite way.',
-      general: 'Write a short polite reply asking what the next step should be.',
+      disagree:     'Say you disagree with the request and ask them to explain the reason clearly.',
+      clarify:      'Ask for more information and clarification in a calm and polite way.',
+      general:      'Write a short polite reply asking what the next step should be.',
     }
 
     const language = analysis.documentLanguage || 'English'
 
     const context =
-  `The letter is from ${analysis.sender}. ` +
-  `It looks like: ${analysis.summary}. ` +
-  (analysis.deadline
-    ? `The letter mentions a deadline of ${analysis.deadline}. `
-    : '') +
-  (((analysis as any).qualityWarnings?.length ?? 0) > 0
-    ? 'Note: the document may be incomplete or unclear.'
-    : '')
+      `The letter is from ${analysis.sender}. ` +
+      `It looks like: ${analysis.summary}. ` +
+      (analysis.deadline ? `The letter mentions a deadline of ${analysis.deadline}. ` : '') +
+      (((analysis as any).qualityWarnings?.length ?? 0) > 0 ? 'Note: the document may be incomplete or unclear.' : '')
+
     try {
       const response = await fetch('/api/ai', {
         method: 'POST',
@@ -91,7 +88,9 @@ export default function ResultPage() {
   async function copyReply() {
     if (!replyResult) return
     try {
-      await navigator.clipboard.writeText(`${replyResult.subject ? replyResult.subject + '\n\n' : ''}${replyResult.body}`)
+      await navigator.clipboard.writeText(
+        `${replyResult.subject ? replyResult.subject + '\n\n' : ''}${replyResult.body}`
+      )
       setCopied(true)
       window.setTimeout(() => setCopied(false), 1600)
     } catch {
@@ -120,46 +119,48 @@ export default function ResultPage() {
     </div>
   )
 
-  const isScam = analysis.scamRisk === 'high' || analysis.seriousness === 'scam'
-  const status = STATUS_CONFIG[analysis.seriousness] || STATUS_CONFIG.low
+  const isScam = analysis.scamRisk === 'high' || analysis.urgency === 'scam'
+  const status = STATUS_CONFIG[analysis.urgency as Urgency] || STATUS_CONFIG.low
 
-  const extractedDeadlineDate = analysis.extractedDeadlineDate || analysis.deadlineDate || null
+  const extractedDeadlineDate = analysis.extractedDate || analysis.deadline || null
   const parsedDeadline = extractedDeadlineDate ? new Date(`${extractedDeadlineDate}T00:00:00Z`) : null
   const parsedDeadlineValid = parsedDeadline ? !Number.isNaN(parsedDeadline.getTime()) : false
   const defaultDaysRemaining = parsedDeadlineValid && parsedDeadline
-  ? Math.round((parsedDeadline.getTime() - new Date().setHours(0, 0, 0, 0)) / (1000 * 60 * 60 * 24))
-  : null
+    ? Math.round((parsedDeadline.getTime() - new Date().setHours(0, 0, 0, 0)) / (1000 * 60 * 60 * 24))
+    : null
   const daysRemaining = typeof analysis.daysRemaining === 'number' ? analysis.daysRemaining : defaultDaysRemaining
-  const deadlineUrgency = analysis.deadlineUrgency || (
+  const deadlineUrgency = (analysis.deadlineUrgency ?? (
     daysRemaining === null ? 'NONE' :
-    daysRemaining < 0 ? 'CRITICAL' :
-    daysRemaining <= 3 ? 'CRITICAL' :
-    daysRemaining <= 7 ? 'HIGH' :
-    daysRemaining <= 14 ? 'MEDIUM' :
-    'LOW'
-  ) as 'NONE' | 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'
+    daysRemaining < 0     ? 'CRITICAL' :
+    daysRemaining <= 3    ? 'CRITICAL' :
+    daysRemaining <= 7    ? 'HIGH' :
+    daysRemaining <= 14   ? 'MEDIUM' : 'LOW'
+  )) as 'NONE' | 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'
+
   const deadlineStatusLabel = deadlineUrgency === 'NONE' ? 'No deadline' : deadlineUrgency
-  const deadlineStatusColor = deadlineUrgency === 'CRITICAL' ? 'var(--red)' : deadlineUrgency === 'HIGH' ? 'var(--orange)' : deadlineUrgency === 'MEDIUM' ? 'var(--yellow)' : deadlineUrgency === 'LOW' ? 'var(--green)' : 'var(--ink-3)'
+  const deadlineStatusColor =
+    deadlineUrgency === 'CRITICAL' ? 'var(--red)'    :
+    deadlineUrgency === 'HIGH'     ? 'var(--orange)' :
+    deadlineUrgency === 'MEDIUM'   ? 'var(--yellow)' :
+    deadlineUrgency === 'LOW'      ? 'var(--green)'  : 'var(--ink-3)'
   const deadlineLabel = analysis.deadline || (extractedDeadlineDate ? 'Exact deadline detected' : 'No confirmed deadline detected.')
-let deadlineSummary = 'No deadline detected.';
 
-if (daysRemaining !== null) {
-  if (daysRemaining < 0) {
-    deadlineSummary =
-      'Deadline passed ' + Math.abs(daysRemaining) + ' day(s) ago.';
-  } else if (daysRemaining === 0) {
-    deadlineSummary = 'Due today.';
-  } else {
-    deadlineSummary =
-      daysRemaining + ' day(s) remaining.';
+  let deadlineSummary = 'No deadline detected.'
+  if (daysRemaining !== null) {
+    if (daysRemaining < 0) {
+      deadlineSummary = `Deadline passed ${Math.abs(daysRemaining)} day${Math.abs(daysRemaining) === 1 ? '' : 's'} ago.`
+    } else if (daysRemaining === 0) {
+      deadlineSummary = 'Due today.'
+    } else {
+      deadlineSummary = `${daysRemaining} day${daysRemaining === 1 ? '' : 's'} remaining.`
+    }
   }
-}
 
-return (
-    <div style={{ minHeight:'100dvh', background:'var(--bg)' }>
+  return (
+    <div style={{ minHeight:'100dvh', background:'var(--bg)' }}>
       <div className="topbar">
         <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-          <btton onClick={() => router.push('/check')} aria-label="Go back"
+          <button onClick={() => router.push('/check')} aria-label="Go back"
             style={{ width:40, height:40, display:'flex', alignItems:'center', justifyContent:'center', background:'transparent', border:'none', borderRadius:10, cursor:'pointer', color:'var(--ink-3)' }}>
             <RotateCcw size={18} />
           </button>
@@ -171,17 +172,18 @@ return (
           </Link>
           <button onClick={toggle} aria-label="Toggle theme"
             style={{ width:40, height:40, display:'flex', alignItems:'center', justifyContent:'center', background:'transparent', border:'none', borderRadius:10, cursor:'pointer', color:'var(--ink-3)' }}>
-            {resolved==='dark' ? <Sun size={18}/> : <Moon size={18}/>}
+            {resolved === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
           </button>
         </div>
       </div>
 
       <div className="wrap" style={{ paddingTop:28, paddingBottom:80 }}>
+
         <div className={`anim-up ${status.cls}`} style={{ borderRadius:'var(--r-lg)', padding:'22px 22px', marginBottom:18 }}>
           <div style={{ display:'flex', alignItems:'flex-start', gap:14, flexWrap:'wrap' }}>
             <span style={{ fontSize:'2.2rem', lineHeight:1, flexShrink:0, marginTop:2 }}>{status.emoji}</span>
             <div style={{ minWidth:0 }}>
-              <p style={{ fontWeight:800, fontSize:'1.2rem', color: status.textColor, marginBottom:8, lineHeight:1.2 }}>
+              <p style={{ fontWeight:800, fontSize:'1.2rem', color:status.textColor, marginBottom:8, lineHeight:1.2 }}>
                 {status.label}
               </p>
               <p style={{ fontSize:'1rem', color:'var(--ink)', lineHeight:1.75 }}>
@@ -219,7 +221,7 @@ return (
           <div style={{ display:'grid', gap:14, gridTemplateColumns:'1fr 1fr', alignItems:'stretch' }}>
             <div>
               <p style={{ fontSize:'.78rem', fontWeight:700, letterSpacing:'.08em', textTransform:'uppercase', color:'var(--ink-3)', marginBottom:6 }}>Category</p>
-              <p style={{ fontSize:'1rem', fontWeight:700, color:'var(--ink)' }}>{analysis.category}</p>
+              <p style={{ fontSize:'1rem', fontWeight:700, color:'var(--ink)' }}>{"�"}</p>
             </div>
             <div>
               <p style={{ fontSize:'.78rem', fontWeight:700, letterSpacing:'.08em', textTransform:'uppercase', color:'var(--ink-3)', marginBottom:6 }}>Language</p>
@@ -227,11 +229,11 @@ return (
             </div>
             <div>
               <p style={{ fontSize:'.78rem', fontWeight:700, letterSpacing:'.08em', textTransform:'uppercase', color:'var(--ink-3)', marginBottom:6 }}>Sender confidence</p>
-              <p style={{ fontSize:'1rem', fontWeight:700, color:'var(--ink)' }}>{analysis.senderConfidence}%</p>
+              <p style={{ fontSize:'1rem', fontWeight:700, color:'var(--ink)' }}>{"�"}</p>
             </div>
             <div>
               <p style={{ fontSize:'.78rem', fontWeight:700, letterSpacing:'.08em', textTransform:'uppercase', color:'var(--ink-3)', marginBottom:6 }}>Urgency score</p>
-              <p style={{ fontSize:'1rem', fontWeight:700, color:'var(--ink)' }}>{analysis.urgencyScore}/100</p>
+              <p style={{ fontSize:'1rem', fontWeight:700, color:'var(--ink)' }}>{"�"}/100</p>
             </div>
           </div>
         </div>
@@ -248,24 +250,20 @@ return (
             <div style={{ padding:'22px 22px' }}>
               <p style={{ fontSize:'1rem', fontWeight:700, color:'var(--ink)', marginBottom:10 }}>Quality warnings</p>
               <div style={{ display:'grid', gap:8 }}>
-               {(((analysis as any).qualityWarnings) || []).map((warning: string, index: number) => (
-  <p
-    key={index}
-    style={{ fontSize:'1rem', color:'var(--ink)', lineHeight:1.6 }}
-  >
-    • {warning}
-  </p>
-))}
+                {((analysis as any).qualityWarnings || []).map((warning: string, index: number) => (
+                  <p key={index} style={{ fontSize:'1rem', color:'var(--ink)', lineHeight:1.6 }}>• {warning}</p>
+                ))}
+              </div>
             </div>
           </div>
-        }
+        )}
 
-        {(analysis.confidenceExplanation || analysis.senderConfidence < 70) && (
+        {((analysis as any).confidenceExplanation || (analysis as any).senderConfidence < 70) && (
           <div className="anim-up card" style={{ marginBottom:12, border:'1px solid var(--rim)' }}>
             <div style={{ padding:'22px 22px' }}>
               <p style={{ fontSize:'1rem', fontWeight:700, color:'var(--ink)', marginBottom:10 }}>Confidence note</p>
               <p style={{ fontSize:'1rem', color:'var(--ink)', lineHeight:1.8, marginBottom:10 }}>
-                {analysis.confidenceExplanation || 'This analysis is not fully certain. Please verify the sender, deadline, and amount before taking any action.'}
+                {(analysis as any).confidenceExplanation || 'This analysis is not fully certain. Please verify the sender, deadline, and amount before taking any action.'}
               </p>
               <p style={{ fontSize:'.9rem', color:'var(--ink-3)', lineHeight:1.6 }}>
                 Confirmed: the main request and sender are visible. Likely: the reason for the letter and urgency. Uncertain: exact amounts, deadlines, or formal threats.
@@ -278,12 +276,17 @@ return (
           <div className="anim-up card" style={{ marginBottom:12 }}>
             <div style={{ padding:'22px 22px' }}>
               <p style={{ fontSize:'1rem', fontWeight:700, color:'var(--ink)', marginBottom:10 }}>Why this matters</p>
-              <p style={{ fontSize:'1rem', color:'var(--ink)', lineHeight:1.8 }}>{analysis.importance}</p>
+              <p style={{ fontSize:'1rem', color:'var(--ink)', lineHeight:1.8 }}>{(analysis as any).importance}</p>
             </div>
           </div>
         )}
 
-        <div className="anim-up" style={{ borderRadius:'var(--r-lg)', padding:'18px 22px', marginBottom:12, display:'flex', alignItems:'center', gap:14, flexWrap:'wrap', background: daysRemaining !== null && daysRemaining < 0 ? 'rgba(255, 117, 106, 0.08)' : 'var(--bg-card)', border: daysRemaining !== null && daysRemaining < 0 ? '1px solid rgba(255, 117, 106, 0.2)' : '1px solid var(--rim)' }}>
+        <div className="anim-up" style={{
+          borderRadius:'var(--r-lg)', padding:'18px 22px', marginBottom:12,
+          display:'flex', alignItems:'center', gap:14, flexWrap:'wrap',
+          background: daysRemaining !== null && daysRemaining < 0 ? 'rgba(255, 117, 106, 0.08)' : 'var(--bg-card)',
+          border:     daysRemaining !== null && daysRemaining < 0 ? '1px solid rgba(255, 117, 106, 0.2)' : '1px solid var(--rim)',
+        }}>
           <span style={{ fontSize:'1.75rem', lineHeight:1 }}>⏰</span>
           <div style={{ minWidth:0, flex:'1 1 240px' }}>
             <p style={{ fontSize:'.78rem', fontWeight:700, letterSpacing:'.08em', textTransform:'uppercase', color:'var(--orange)', marginBottom:4 }}>Deadline</p>
@@ -294,29 +297,18 @@ return (
             <p style={{ marginTop:6, fontSize:'.88rem', color:'var(--ink-3)' }}>{deadlineSummary}</p>
           </div>
           <div style={{ display:'flex', alignItems:'center', gap:10, flexShrink:0 }}>
-            <span style={{ padding:'8px 12px', borderRadius:999, border:`1px solid ${deadlineStatusColor}`, color:deadlineStatusColor, fontSize:'.8rem', fontWeight:700, background:'var(--bg-subtle)' }}>{deadlineStatusLabel}</span>
+            <span style={{ padding:'8px 12px', borderRadius:999, border:`1px solid ${deadlineStatusColor}`, color:deadlineStatusColor, fontSize:'.8rem', fontWeight:700, background:'var(--bg-subtle)' }}>
+              {deadlineStatusLabel}
+            </span>
           </div>
         </div>
-
-        {(analysis as any).qualityWarnings?.length > 0 && (
-          <div className="anim-up card" style={{ marginBottom:12, border:'1px solid var(--rim)' }}>
-            <div style={{ padding:'22px 22px' }}>
-              <p style={{ fontSize:'1rem', fontWeight:700, color:'var(--ink)', marginBottom:10 }}>Quality warnings</p>
-              <div style={{ display:'grid', gap:8 }}>
-                {analysis.qualityWarnings.map((warning, index) => (
-                  <p key={index} style={{ fontSize:'1rem', color:'var(--ink)', lineHeight:1.6 }}>• {warning}</p>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
 
         {analysis.scamIndicators?.length > 0 && (
           <div className="anim-up card" style={{ marginBottom:12 }}>
             <div style={{ padding:'22px 22px' }}>
               <p style={{ fontSize:'1rem', fontWeight:700, color:'var(--ink)', marginBottom:10 }}>Scam indicators</p>
               <div style={{ display:'grid', gap:10 }}>
-                {analysis.scamIndicators.map((indicator, index) => (
+                {(analysis.scamIndicators || []).map((indicator: string, index: number) => (
                   <p key={index} style={{ fontSize:'1rem', color:'var(--ink)', lineHeight:1.6 }}>• {indicator}</p>
                 ))}
               </div>
@@ -338,7 +330,7 @@ return (
                   key={action.id}
                   onClick={() => generateReply(action.id)}
                   disabled={replyLoading}
-                  className={`btn btn-outline btn-full${replyAction===action.id ? ' active' : ''}`}
+                  className={`btn btn-outline btn-full${replyAction === action.id ? ' active' : ''}`}
                   style={{ minHeight:48 }}
                 >
                   {action.label}
@@ -388,9 +380,11 @@ return (
           <div style={{ padding:'22px 22px' }}>
             <p style={{ fontSize:'1rem', fontWeight:700, color:'var(--ink)', marginBottom:14 }}>Action checklist</p>
             <div style={{ display:'grid', gap:12 }}>
-              {analysis.checklist.map((item, index) => (
+              {(analysis.checklist || []).map((item: string, index: number) => (
                 <div key={index} style={{ display:'flex', alignItems:'flex-start', gap:12 }}>
-                  <span style={{ width:28, height:28, borderRadius:999, background:'var(--bg-subtle)', display:'grid', placeItems:'center', fontSize:'.88rem', color:'var(--ink)' }}>{index + 1}</span>
+                  <span style={{ width:28, height:28, borderRadius:999, background:'var(--bg-subtle)', display:'grid', placeItems:'center', fontSize:'.88rem', color:'var(--ink)' }}>
+                    {index + 1}
+                  </span>
                   <p style={{ fontSize:'1rem', color:'var(--ink)', lineHeight:1.6 }}>{item}</p>
                 </div>
               ))}
@@ -413,7 +407,14 @@ return (
         <p style={{ textAlign:'center', marginTop:24, fontSize:'.8rem', color:'var(--ink-3)', lineHeight:1.7 }}>
           🔒 Your letter is analysed only once and removed after. Your privacy is protected.
         </p>
+
       </div>
     </div>
   )
 }
+
+
+
+
+
+

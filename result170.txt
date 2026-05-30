@@ -1,0 +1,172 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { RotateCcw, Sun, Moon, Loader2 } from 'lucide-react'
+import { useTheme } from '@/components/ThemeProvider'
+import type { AnalysisResult } from '@/lib/analysis'
+import { saveCaseHistoryEntry } from '@/lib/cases'
+
+type Urgency = 'none' | 'low' | 'medium' | 'high' | 'scam'
+type ReplyActionId = 'more_time' | 'already_paid' | 'disagree' | 'clarify' | 'general'
+
+const STATUS_CONFIG: Record<Urgency, { emoji:string; label:string; cls:string; color:string; textColor:string }> = {
+  none:   { emoji:'Ã”Â£Ã ', label:'No action needed',        cls:'status-green',  color:'var(--green)',  textColor:'var(--green)' },
+  low:    { emoji:'Â­Æ’Æ’Ã­', label:'Important Ã”Ã‡Ã¶ read it',     cls:'status-yellow', color:'var(--yellow)', textColor:'var(--yellow)' },
+  medium: { emoji:'Ã”ÃœÃ¡Â´Â©Ã…', label:'Important Ã”Ã‡Ã¶ act soon',   cls:'status-orange', color:'var(--orange)', textColor:'var(--orange)' },
+  high:   { emoji:'Â­Æ’Ã¶Ã‚', label:'Urgent Ã”Ã‡Ã¶ respond now',   cls:'status-red',    color:'var(--red)',    textColor:'var(--red)' },
+  scam:   { emoji:'Â­Æ’ÃœÂ¿', label:'Possible scam or fraud', cls:'status-red',    color:'var(--red)',    textColor:'var(--red)' },
+}
+
+export default function ResultPage() {
+  const router = useRouter()
+  const { resolved, toggle } = useTheme()
+
+  const [analysis, setAnalysis] = useState<AnalysisResult | null>(null)
+  const [replyAction, setReplyAction] = useState<ReplyActionId | null>(null)
+  const [replyResult, setReplyResult] = useState<{ subject:string; body:string } | null>(null)
+  const [replyLoading, setReplyLoading] = useState(false)
+  const [replyError, setReplyError] = useState('')
+  const [copied, setCopied] = useState(false)
+
+  const replyActions: { id: ReplyActionId; label: string; note: string }[] = [
+    { id: 'more_time', label: 'Ask for more time', note: 'Ask politely for more time to respond.' },
+    { id: 'already_paid', label: 'I already paid', note: 'Tell them you already paid and ask them to confirm receipt.' },
+    { id: 'disagree', label: 'I disagree', note: 'Say you disagree and ask them to explain why.' },
+    { id: 'clarify', label: 'Request clarification', note: 'Ask for more details or missing information.' },
+    { id: 'general', label: 'General polite reply', note: 'Send a calm request for next steps.' },
+  ]
+
+  async function generateReply(action: ReplyActionId) {
+    if (!analysis) return
+    setReplyAction(action)
+    setReplyError('')
+    setReplyLoading(true)
+    setReplyResult(null)
+    setCopied(false)
+
+    const actionText: Record<ReplyActionId,string> = {
+      more_time: 'Ask politely for more time to respond, without apologizing too much.',
+      already_paid: 'Explain that you already paid and ask them to confirm receipt politely.',
+      disagree: 'Say you disagree with the request and ask them to explain the reason clearly.',
+      clarify: 'Ask for more information and clarification in a calm and polite way.',
+      general: 'Write a short polite reply asking what the next step should be.',
+    }
+
+    const language = analysis.documentLanguage || 'English'
+
+    const context =
+  `The letter is from ${analysis.sender}. ` +
+  `It looks like: ${analysis.summary}. ` +
+  (analysis.deadline
+    ? `The letter mentions a deadline of ${analysis.deadline}. `
+    : '') +
+  (((analysis as any).qualityWarnings?.length ?? 0) > 0
+    ? 'Note: the document may be incomplete or unclear.'
+    : '')
+    
+    try {
+      const response = await fetch('/api/ai', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'generate',
+          language,
+          tone: 'calm, polite, short, human, non-aggressive',
+          request: `${actionText[action]} ${context}`,
+        }),
+      })
+      const data = await response.json()
+      if (!response.ok || data.error) {
+        throw new Error(data.error || 'Unable to generate reply.')
+      }
+      setReplyResult({ subject: data.subject || '', body: data.body || '' })
+    } catch (err: any) {
+      setReplyError(err?.message || 'Unable to generate reply.')
+    } finally {
+      setReplyLoading(false)
+    }
+  }
+
+  async function copyReply() {
+    if (!replyResult) return
+    try {
+      await navigator.clipboard.writeText(`${replyResult.subject ? replyResult.subject + '\n\n' : ''}${replyResult.body}`)
+      setCopied(true)
+      window.setTimeout(() => setCopied(false), 1600)
+    } catch {
+      setCopied(false)
+    }
+  }
+
+  useEffect(() => {
+    const raw = sessionStorage.getItem('kp_result')
+    if (!raw) { router.push('/check'); return }
+    try {
+      const parsed = JSON.parse(raw)
+      setAnalysis(parsed)
+      if (sessionStorage.getItem('kp_case_save_pending') === 'true') {
+        saveCaseHistoryEntry(parsed)
+        sessionStorage.removeItem('kp_case_save_pending')
+      }
+    } catch {
+      router.push('/check')
+    }
+  }, [router])
+
+  if (!analysis) return (
+    <div style={{ minHeight:'100dvh', display:'flex', alignItems:'center', justifyContent:'center', background:'var(--bg)' }}>
+      <Loader2 size={32} className="anim-spin" style={{ color:'var(--ink-3)' }} />
+    </div>
+  )
+
+  const isScam = analysis.scamRisk === 'high' || analysis.seriousness === 'scam'
+  const status = STATUS_CONFIG[analysis.seriousness] || STATUS_CONFIG.low
+
+  const extractedDeadlineDate = analysis.extractedDeadlineDate || analysis.deadlineDate || null
+  const parsedDeadline = extractedDeadlineDate ? new Date(`${extractedDeadlineDate}T00:00:00Z`) : null
+  const parsedDeadlineValid = parsedDeadline ? !Number.isNaN(parsedDeadline.getTime()) : false
+  const defaultDaysRemaining = parsedDeadlineValid && parsedDeadline
+  ? Math.round((parsedDeadline.getTime() - new Date().setHours(0, 0, 0, 0)) / (1000 * 60 * 60 * 24))
+  : null
+  const daysRemaining = typeof analysis.daysRemaining === 'number' ? analysis.daysRemaining : defaultDaysRemaining
+  
+  const deadlineUrgency =
+  analysis.deadlineUrgency ??
+  (
+    daysRemaining === null ? 'NONE' :
+    daysRemaining < 0 ? 'CRITICAL' :
+    daysRemaining <= 3 ? 'CRITICAL' :
+    daysRemaining <= 7 ? 'HIGH' :
+    daysRemaining <= 14 ? 'MEDIUM' :
+    'LOW'
+  ) as 'NONE' | 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'
+  const deadlineStatusLabel = deadlineUrgency === 'NONE' ? 'No deadline' : deadlineUrgency
+  const deadlineStatusColor = deadlineUrgency === 'CRITICAL' ? 'var(--red)' : deadlineUrgency === 'HIGH' ? 'var(--orange)' : deadlineUrgency === 'MEDIUM' ? 'var(--yellow)' : deadlineUrgency === 'LOW' ? 'var(--green)' : 'var(--ink-3)'
+  const deadlineLabel = analysis.deadline || (extractedDeadlineDate ? 'Exact deadline detected' : 'No confirmed deadline detected.')
+let deadlineSummary = 'No deadline detected.';
+
+if (daysRemaining !== null) {
+  if (daysRemaining < 0) {
+    deadlineSummary =
+      `Deadline passed ${Math.abs(daysRemaining)} day${Math.abs(daysRemaining) === 1 ? '' : 's'} ago.`;
+  } else if (daysRemaining === 0) {
+    deadlineSummary = 'Due today.';
+  } else {
+    deadlineSummary =
+      `${daysRemaining} day${daysRemaining === 1 ? '' : 's'} remaining.`;
+  }
+}
+
+return (
+    <div style={{ minHeight:'100dvh', background:'var(--bg)' }}>
+      <div className="topbar">
+        <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+          <button onClick={() => router.push('/check')} aria-label="Go back"
+            style={{ width:40, height:40, display:'flex', alignItems:'center', justifyContent:'center', background:'transparent', border:'none', borderRadius:10, cursor:'pointer', color:'var(--ink-3)' }}>
+            <RotateCcw size={18} />
+          </button>
+          <span style={{ fontWeight:600, fontSize:'1rem', color:'var(--ink)' }}>Letter interpreter</span>
+        </div>
+        <div style={{ display:'flex', alignItems:'center', gap:8 }}>

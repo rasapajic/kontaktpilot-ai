@@ -1,10 +1,10 @@
-import type { AnalysisResult, DocumentCategory } from '@/lib/analysis'
+import type { AnalysisResult } from '@/lib/analysis'
 
 export interface CaseHistoryEntry {
   id: string
   savedAt: string
   sender: string
-  category: DocumentCategory
+  category: string
   urgencyScore: number
   deadline: string | null
   summary: string
@@ -32,8 +32,13 @@ export function saveCaseHistoryEntry(analysis: AnalysisResult) {
     id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     savedAt: new Date().toISOString(),
     sender: analysis.sender,
-    category: analysis.category,
-    urgencyScore: analysis.urgencyScore,
+    category: analysis.scamRisk || 'general',
+urgencyScore:
+  analysis.deadlineUrgency === 'HIGH'
+    ? 90
+    : analysis.deadlineUrgency === 'MEDIUM'
+    ? 60
+    : 30,
     deadline: analysis.deadline,
     summary: analysis.summary,
     analysis,

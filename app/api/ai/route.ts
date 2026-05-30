@@ -1,71 +1,139 @@
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
-
-const PROMPTS = {
-  reply: `You write professional email replies for people who struggle with formal communication.
-
-Rules:
-- Use correct formal greeting/closing for the target language (e.g. "Sehr geehrte Damen und Herren" for German)
-- Match the register of the original email
-- Be polite, clear, professional
-- Follow the user's instructions exactly
-- Write in the requested language
-
-Respond ONLY with valid JSON: { "subject": "...", "body": "..." }`,
-
-  generate: `You write professional emails for people who need help with formal communication.
-
-Rules:
-- Use correct formal greeting and closing for the language
-- No placeholder brackets — write naturally
-- Match the requested tone
-- Be concise but complete
-
-Respond ONLY with valid JSON: { "subject": "...", "body": "..." }`,
-
-  translate: `You are a precise translator. Preserve tone and formality of the original.
-
-Respond ONLY with valid JSON: { "translation": "...", "detectedLanguage": "..." }`,
-}
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json()
-    const { action } = body
+    const apiKey = process.env.OPENAI_API_KEY
 
-    const prompt = PROMPTS[action as keyof typeof PROMPTS]
-    if (!prompt) return NextResponse.json({ error: 'Invalid action' }, { status: 400 })
-
-    let userMsg = ''
-    switch (action) {
-      case 'reply':
-        userMsg = `Write a ${body.tone||'professional'} reply in ${body.language||'Deutsch'}.\n\nOriginal:\n${body.email}\n\nUser's intention: ${body.instruction||'Reply politely'}`
-        break
-      case 'generate':
-        userMsg = `Write a ${body.tone||'professional'} email in ${body.language||'Deutsch'}.\n\nRequest: ${body.request}`
-        break
-      case 'translate':
-        userMsg = `Translate to ${body.to}.\n\n${body.text}`
-        break
+    if (!apiKey) {
+      return NextResponse.json(
+        { error: 'OPENAI_API_KEY missing' },
+        { status: 500 }
+      )
     }
 
-    const response = await openai.chat.completions.create({
-      model: 'gpt-4o-mini', max_tokens: 1200, temperature: 0.35,
-      messages: [
-        { role: 'system', content: prompt },
-        { role: 'user',   content: userMsg },
-      ],
-      response_format: { type: 'json_object' },
+    const openai = new OpenAI({
+      apiKey,
     })
 
-    const content = response.choices[0]?.message?.content
-    if (!content) return NextResponse.json({ error: 'No response' }, { status: 500 })
-    return NextResponse.json(JSON.parse(content))
+    const body = await req.json()
 
-  } catch (err: any) {
-    console.error('[AI Route]', err)
-    return NextResponse.json({ error: 'Something went wrong. Please try again.' }, { status: 500 })
+    const action = body?.action
+
+    let systemPrompt = ''
+    let userPrompt = ''
+
+    if (action === 'reply') {
+      systemPrompt = `
+You write professional email replies.
+
+Return ONLY JSON:
+{
+  "subject": "",
+  "body": ""
+}
+`
+
+      userPrompt = `
+Write a professional reply in ${
+        body.language || 'German'
+      }.
+
+Original email:
+${body.email || ''}
+
+Instruction:
+${body.instruction || ''}
+`
+    } else if (action === 'generate') {
+      systemPrompt = `
+You write professional emails.
+
+Return ONLY JSON:
+{
+  "subject": "",
+  "body": ""
+}
+`
+
+      userPrompt = `
+Write a professional email in ${
+        body.language || 'German'
+      }.
+
+Request:
+${body.request || ''}
+`
+    } else if (action === 'translate') {
+      systemPrompt = `
+You are a translator.
+
+Return ONLY JSON:
+{
+  "translation": "",
+  "detectedLanguage": ""
+}
+`
+
+      userPrompt = `
+Translate this text to ${
+        body.to || 'English'
+      }:
+
+${body.text || ''}
+`
+    } else {
+      return NextResponse.json(
+        { error: 'Invalid action' },
+        { status: 400 }
+      )
+    }
+
+    const completion =
+      await openai.chat.completions.create({
+        model: 'gpt-4o-mini',
+        temperature: 0.3,
+        response_format: {
+          type: 'json_object',
+        },
+        messages: [
+          {
+            role: 'system',
+            content: systemPrompt,
+          },
+          {
+            role: 'user',
+            content: userPrompt,
+          },
+        ],
+        max_tokens: 1200,
+      })
+
+    const content =
+      completion.choices?.[0]?.message?.content
+
+    if (!content) {
+      return NextResponse.json(
+        { error: 'No response from OpenAI' },
+        { status: 500 }
+      )
+    }
+
+    return NextResponse.json(
+      JSON.parse(content)
+    )
+  } catch (error) {
+    console.error(
+      '[AI_ROUTE_ERROR]',
+      error
+    )
+
+    return NextResponse.json(
+      { error: 'Something went wrong' },
+      { status: 500 }
+    )
   }
 }

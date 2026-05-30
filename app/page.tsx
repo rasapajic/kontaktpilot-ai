@@ -1,5 +1,6 @@
 'use client'
 
+import messages from '@/lib/messages/sr.json'
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Moon, Sun, Camera, FileUp, ClipboardPaste } from 'lucide-react'
@@ -67,12 +68,25 @@ function TrustRow() {
 }
 
 /* ─── First-time onboarding steps ─────────── */
-function HowItWorks() {
-  const steps = [
-    { icon:'1', title:'Upload your letter', detail:'Photo, PDF, screenshot or copied text from any official notice.' },
-    { icon:'2', title:'Read a calm explanation', detail:'We tell you who sent it, what it means, and whether you need to act.' },
-    { icon:'3', title:'Know your next step', detail:'Get exact guidance, deadlines, and reply help if needed.' },
-  ]
+function HowItWorks(){
+
+ const steps = [
+  {
+    no: '1',
+    title: messages.steps.oneTitle,
+    detail: messages.steps.oneText
+  },
+  {
+    no: '2',
+    title: messages.steps.twoTitle,
+    detail: messages.steps.twoText
+  },
+  {
+    no: '3',
+    title: messages.steps.threeTitle,
+    detail: messages.steps.threeText
+  }
+];
 
   return (
     <div className="anim-up" style={{marginBottom:32}}>
@@ -88,7 +102,7 @@ function HowItWorks() {
       <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(170px,1fr))',gap:12}}>
         {steps.map(step=> (
           <div key={step.title} className="card" style={{padding:'20px',minHeight:150,display:'flex',flexDirection:'column',gap:14}}>
-            <div style={{width:36,height:36,display:'grid',placeItems:'center',borderRadius:12,background:'var(--bg-subtle)',fontSize:'1rem',fontWeight:700,color:'var(--ink)'}}>{step.icon}</div>
+            <div style={{width:36,height:36,display:'grid',placeItems:'center',borderRadius:12,background:'var(--bg-subtle)',fontSize:'1rem',fontWeight:700,color:'var(--ink)'}}>{step.no}</div>
             <div>
               <p style={{fontWeight:700,fontSize:'1rem',color:'var(--ink)',marginBottom:8}}>{step.title}</p>
               <p style={{fontSize:'.92rem',color:'var(--ink-2)',lineHeight:1.6}}>{step.detail}</p>
@@ -170,7 +184,7 @@ function UploadZone({ onFile, onText }: {
             onMouseUp={e=>{e.currentTarget.style.transform='scale(1)'}}
           >
             <Camera size={21} style={{color:'var(--gold)',flexShrink:0}}/>
-            📸 Take photo of letter
+            📸 {messages.upload.photo}
           </button>
 
           {/* Secondary — upload file */}
@@ -192,7 +206,7 @@ function UploadZone({ onFile, onText }: {
             }}
           >
             <FileUp size={16}/>
-            Upload PDF or screenshot
+            {messages.upload.upload}
           </div>
           <input ref={fileRef} type="file"
             accept=".pdf,.txt,.png,.jpg,.jpeg,.webp,.heic,image/*"
@@ -398,15 +412,33 @@ export default function Page() {
             Official letters made easy
           </p>
           <h1 className="anim-up t-hero" style={{marginBottom:18,color:'var(--ink)'}}>
-            Upload your letter. Get a calm, private explanation.
+            {messages.hero.title}
           </h1>
           <p className="anim-up t-body" style={{color:'var(--ink-2)',lineHeight:1.75,maxWidth:520,margin:'0 auto 20px'}}>
-            Photo, PDF, screenshot or pasted text. We explain who sent it, what they want, and what to do next — without legal jargon.
+            {messages.hero.subtitle}
           </p>
           <div style={{display:'flex',flexWrap:'wrap',justifyContent:'center',gap:10,margin:'0 auto',maxWidth:520}}>
-            {['🔒 Private by default','✅ No signup for first letter','🇪🇺 EU servers only'].map(label => (
-              <span key={label} style={{padding:'10px 14px',borderRadius:999,background:'var(--bg-card)',border:'1.5px solid var(--rim)',fontSize:'.82rem',color:'var(--ink-2)'}}>{label}</span>
-            ))}
+            {[
+  messages.badges.private,
+  messages.badges.signup,
+  messages.badges.eu
+].map((label) => (
+  <span
+    key={label}
+    style={{
+      padding:'10px 14px',
+      borderRadius:999,
+      background:'var(--bg-card)',
+      border:'1.5px solid var(--rim)',
+      fontSize:'.82rem',
+      color:'var(--ink-2)'
+    }}
+  >
+    {label}
+  </span>
+))}
+              
+            
           </div>
         </div>
 
@@ -418,7 +450,7 @@ export default function Page() {
                 Upload your official letter
               </p>
               <p style={{fontSize:'1rem',color:'var(--ink-2)',lineHeight:1.75}}>
-                Use a photo, PDF, screenshot, or paste text from any authority letter, bill, fine, or official email.
+                {messages.hero.subtitle}
               </p>
             </div>
             <div style={{flex:'0 0 190px',padding:'16px',borderRadius:'22px',background:'var(--bg-subtle)',border:'1.5px solid var(--rim-2)',minWidth:0}}>
@@ -573,7 +605,7 @@ export default function Page() {
               onMouseDown={e=>{e.currentTarget.style.transform='scale(.97)'}}
               onMouseUp={e=>{e.currentTarget.style.transform='scale(1)'}}
             >
-              <Camera size={20}/>📸 Take photo of letter
+              <Camera size={20}/>📸 {messages.upload.photo}
             </button>
             <div style={{display:'flex',justifyContent:'center',gap:16,marginTop:14}}>
               {[['✓','No signup'],['🔒','100% private'],['⚡','Free to start']].map(([ic,tx])=>(
@@ -608,3 +640,6 @@ export default function Page() {
     </div>
   )
 }
+
+
+

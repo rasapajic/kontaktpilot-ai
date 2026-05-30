@@ -1,3 +1,5 @@
+import { NextIntlClientProvider } from 'next-intl'
+import messages from '@/lib/messages/sr.json'
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import { ThemeProvider } from '@/components/ThemeProvider'
@@ -28,7 +30,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <script dangerouslySetInnerHTML={{__html:`(function(){var t=localStorage.getItem('kp-t')||'system';var d=t==='dark'||(t==='system'&&window.matchMedia('(prefers-color-scheme:dark)').matches);if(d)document.documentElement.classList.add('dark')})()` }} />
       </head>
-      <body><ThemeProvider>{children}</ThemeProvider></body>
+      <body>
+  <NextIntlClientProvider locale="sr" messages={messages}>
+    <ThemeProvider>
+      {children}
+    </ThemeProvider>
+  </NextIntlClientProvider>
+</body>
     </html>
   )
 }

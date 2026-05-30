@@ -1,0 +1,85 @@
+{
+  "nav": {
+    "letters": "Moja pisma",
+    "signin": "Prijava"
+  },
+
+  "hero": {
+    "title": "Ne razumete dokument koji ste dobili?",
+    "subtitle": "Fotografišite ga i dobijte jednostavno objašnjenje. Kazne, računi, opomene, emailovi i službena pisma — objašnjeni jednostavno."
+  },
+
+  "badges": {
+    "private": "🔒 Privatno po defaultu",
+    "signup": "✅ Bez registracije za prvo pismo",
+    "eu": "🇪🇺 Samo EU serveri"
+  },
+
+  "upload": {
+    "section": "OTPREMITE SLUŽBENI DOKUMENT",
+    "description": "Pošaljite fotografiju, PDF, screenshot ili tekst iz službenog pisma, računa, kazne ili emaila.",
+    "photo": "Fotografiši dokument",
+    "upload": "Otpremi PDF ili screenshot",
+    "paste": "Nalepi tekst"
+  },
+
+  "steps": {
+    "title": "Jednostavan i siguran put od otpremanja do jasnog sledećeg koraka",
+
+    "oneTitle": "Pošaljite dokument",
+    "oneText": "Fotografija, PDF, screenshot ili kopirani tekst iz bilo kog službenog dokumenta.",
+
+    "twoTitle": "Dobijte jednostavno objašnjenje",
+    "twoText": "Reći ćemo vam ko je poslao dokument, šta znači i da li morate da reagujete.",
+
+    "threeTitle": "Znajte sledeći korak",
+    "threeText": "Dobijte jasna uputstva, rokove i pomoć za odgovor ako je potrebno."
+  },
+
+  "trust": {
+    "title": "Privatnost kojoj možete verovati",
+
+    "privateTitle": "Privatno po defaultu",
+    "privateText": "Vaš dokument se analizira jednom i briše odmah nakon obrade. Ništa se ne deli.",
+
+    "serversTitle": "EU serveri",
+    "serversText": "Podaci ostaju u Evropskoj uniji i ne koriste se za treniranje modela.",
+
+    "secureTitle": "Sigurna obrada",
+    "secureText": "Vaši dokumenti su zaštićeni tokom celog procesa analize."
+  },
+
+  "cta": {
+    "title": "Pošaljite dokument i saznajte šta zaista znači",
+    "subtitle": "Bez pravnog jezika. Bez stresa. Samo jasno objašnjenje i sledeći koraci."
+  },
+
+  "errors": {
+    "uploadFailed": "Otpremanje nije uspelo",
+    "invalidFile": "Nepodržan format dokumenta",
+    "tooLarge": "Dokument je prevelik",
+    "emptyText": "Unesite ili nalepite tekst dokumenta"
+  },
+
+  "buttons": {
+    "analyze": "Objasni dokument",
+    "uploading": "Otpremanje...",
+    "processing": "Analiza dokumenta...",
+    "retry": "Pokušaj ponovo"
+  },
+
+  "result": {
+    "title": "Objašnjenje dokumenta",
+    "summary": "Kratko i jasno objašnjenje",
+    "nextSteps": "Šta treba da uradite sledeće",
+    "deadline": "Važni rokovi",
+    "sender": "Ko je poslao dokument"
+  },
+
+  "footer": {
+    "privacy": "Privatnost",
+    "terms": "Uslovi korišćenja",
+    "contact": "Kontakt",
+    "copyright": "© KontaktPilot"
+  }
+}
