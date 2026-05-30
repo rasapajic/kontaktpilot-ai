@@ -1,13 +1,15 @@
-'use client'
+﻿'use client'
 
-import messages from '@/lib/messages/sr.json'
+import srMsg from '@/lib/messages/sr.json'
+import deMsg from '@/lib/messages/de.json'
+import enMsg from '@/lib/messages/en.json'
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Moon, Sun, Camera, FileUp, ClipboardPaste } from 'lucide-react'
 import { useTheme } from '@/components/ThemeProvider'
 import Link from 'next/link'
 
-/* ─── Nav ─────────────────────────────────── */
+/* â”€â”€â”€ Nav â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 function Nav() {
   const { resolved, toggle } = useTheme()
   return (
@@ -43,12 +45,12 @@ function Nav() {
   )
 }
 
-/* ─── Trust row ──────────────────────────── */
-function TrustRow() {
+/* â”€â”€â”€ Trust row â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+function TrustRow({ messages }: { messages: any }) {
   const badges = [
-    { icon:'🔒', text:'Private by default' },
-    { icon:'⚡', text:'Instant explanation' },
-    { icon:'🗑', text:'Files deleted after' },
+    { icon:'ðŸ”’', text:'Private by default' },
+    { icon:'âš¡', text:'Instant explanation' },
+    { icon:'ðŸ—‘', text:'Files deleted after' },
   ]
   return (
     <div style={{
@@ -67,8 +69,8 @@ function TrustRow() {
   )
 }
 
-/* ─── First-time onboarding steps ─────────── */
-function HowItWorks(){
+/* â”€â”€â”€ First-time onboarding steps â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+function HowItWorks({ messages }: { messages: any }){
 
  const steps = [
   {
@@ -114,10 +116,11 @@ function HowItWorks(){
   )
 }
 
-/* ─── Upload zone ────────────────────────── */
-function UploadZone({ onFile, onText }: {
+/* â”€â”€â”€ Upload zone â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+function UploadZone({ onFile, onText, messages }: {
   onFile:(f:File)=>void
   onText:(t:string)=>void
+  messages: any
 }) {
   const [tab,      setTab]      = useState<'photo'|'paste'>('photo')
   const [drag,     setDrag]     = useState(false)
@@ -166,7 +169,7 @@ function UploadZone({ onFile, onText }: {
 
       {tab==='photo'&&(
         <div style={{display:'flex',flexDirection:'column',gap:8}}>
-          {/* Primary CTA — camera */}
+          {/* Primary CTA â€” camera */}
           <button onClick={openCamera}
             style={{
               display:'flex',alignItems:'center',justifyContent:'center',
@@ -184,10 +187,10 @@ function UploadZone({ onFile, onText }: {
             onMouseUp={e=>{e.currentTarget.style.transform='scale(1)'}}
           >
             <Camera size={21} style={{color:'var(--gold)',flexShrink:0}}/>
-            📸 {messages.upload.photo}
+            ðŸ“¸ {messages.upload.photo}
           </button>
 
-          {/* Secondary — upload file */}
+          {/* Secondary â€” upload file */}
           <div
             onDragOver={e=>{e.preventDefault();setDrag(true)}}
             onDragLeave={()=>setDrag(false)}
@@ -221,7 +224,7 @@ function UploadZone({ onFile, onText }: {
           <textarea
             value={pasted} onChange={e=>setPasted(e.target.value)}
             rows={6}
-            placeholder="Paste your email or letter here…&#10;&#10;German, English, Turkish, Serbian — any language."
+            placeholder="Paste your email or letter hereâ€¦&#10;&#10;German, English, Turkish, Serbian â€” any language."
             style={{
               width:'100%',padding:'15px 16px',
               background:'var(--bg-card)',
@@ -247,17 +250,17 @@ function UploadZone({ onFile, onText }: {
               transition:'.15s',
             }}
           >
-            Explain this to me →
+            Explain this to me â†’
           </button>
         </div>
       )}
 
-      <TrustRow/>
+      <TrustRow messages={messages}/>
     </div>
   )
 }
 
-/* ─── Example result card ────────────────── */
+/* â”€â”€â”€ Example result card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 function ExampleResult({visible}:{visible:boolean}) {
   if(!visible) return null
   return (
@@ -268,10 +271,10 @@ function ExampleResult({visible}:{visible:boolean}) {
         border:'1.5px solid var(--rim-2)',borderBottom:'none',
       }}>
         <p style={{fontSize:'.7rem',fontWeight:700,letterSpacing:'.08em',textTransform:'uppercase',color:'var(--ink-3)',marginBottom:8}}>
-          📬 Original letter (German)
+          ðŸ“¬ Original letter (German)
         </p>
         <p style={{fontSize:'.85rem',color:'var(--ink-2)',lineHeight:1.65,fontStyle:'italic'}}>
-          "Betreff: Letzte Mahnung — Zahlung überfällig. Der offene Betrag von €238,50 ist binnen 7 Tagen zu überweisen, da wir sonst rechtliche Schritte einleiten."
+          "Betreff: Letzte Mahnung â€” Zahlung Ã¼berfÃ¤llig. Der offene Betrag von â‚¬238,50 ist binnen 7 Tagen zu Ã¼berweisen, da wir sonst rechtliche Schritte einleiten."
         </p>
       </div>
 
@@ -285,24 +288,24 @@ function ExampleResult({visible}:{visible:boolean}) {
           borderBottom:'1.5px solid var(--orange-rim,#F0A860)',
           display:'flex',alignItems:'flex-start',gap:10,
         }}>
-          <span style={{fontSize:'1.6rem',lineHeight:1,flexShrink:0}}>🔶</span>
+          <span style={{fontSize:'1.6rem',lineHeight:1,flexShrink:0}}>ðŸ”¶</span>
           <div>
             <p style={{fontWeight:800,fontSize:'.95rem',color:'var(--orange,#A04800)',marginBottom:4}}>
               Action required within 7 days
             </p>
             <p style={{fontSize:'.88rem',color:'var(--ink)',lineHeight:1.55}}>
-              This is a <strong>final payment warning</strong>. You owe €238.50. They will take legal action if you don't pay.
+              This is a <strong>final payment warning</strong>. You owe â‚¬238.50. They will take legal action if you don't pay.
             </p>
           </div>
         </div>
         <div style={{padding:'14px 16px',display:'flex',alignItems:'flex-start',gap:10}}>
-          <span style={{fontSize:'1.3rem',lineHeight:1,flexShrink:0,marginTop:2}}>✅</span>
+          <span style={{fontSize:'1.3rem',lineHeight:1,flexShrink:0,marginTop:2}}>âœ…</span>
           <div>
             <p style={{fontSize:'.7rem',fontWeight:700,letterSpacing:'.07em',textTransform:'uppercase',color:'var(--ok,#2E7D52)',marginBottom:5}}>
               What to do
             </p>
             <p style={{fontSize:'.88rem',color:'var(--ink)',lineHeight:1.55}}>
-              Pay €238.50 asap. Can't pay full amount? Call them today to arrange instalments.
+              Pay â‚¬238.50 asap. Can't pay full amount? Call them today to arrange instalments.
             </p>
           </div>
         </div>
@@ -312,7 +315,7 @@ function ExampleResult({visible}:{visible:boolean}) {
             background:'var(--bg-subtle)',border:'1.5px dashed var(--rim)',
             fontSize:'.82rem',color:'var(--ink-3)',fontWeight:500,
           }}>
-            ✍️ "Write a professional reply for me in German" →
+            âœï¸ "Write a professional reply for me in German" â†’
           </div>
         </div>
       </div>
@@ -320,10 +323,17 @@ function ExampleResult({visible}:{visible:boolean}) {
   )
 }
 
-/* ─────────────────────────────────────────
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
    PAGE
-───────────────────────────────────────── */
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 export default function Page() {
+  const [messages, setMessages] = useState(deMsg)
+  useEffect(() => {
+    const lang = navigator.language?.slice(0,2).toLowerCase()
+    if (lang === 'sr' || lang === 'bs' || lang === 'hr') setMessages(srMsg)
+    else if (lang === 'en') setMessages(enMsg)
+    else setMessages(deMsg)
+  }, [])
   const router = useRouter()
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
@@ -406,7 +416,7 @@ export default function Page() {
 
       <div style={{maxWidth:520,margin:'0 auto',padding:'0 18px 80px'}}>
 
-        {/* ══ HERO ══════════════════════════════ */}
+        {/* â•â• HERO â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
         <div style={{paddingTop:32,marginBottom:24,textAlign:'center'}}>
           <p style={{fontSize:'.78rem',fontWeight:700,letterSpacing:'.09em',textTransform:'uppercase',color:'var(--ink-3)',marginBottom:12}}>
             Official letters made easy
@@ -442,7 +452,7 @@ export default function Page() {
           </div>
         </div>
 
-        {/* ══ UPLOAD — the whole point ══════════ */}
+        {/* â•â• UPLOAD â€” the whole point â•â•â•â•â•â•â•â•â•â• */}
         <div className="anim-up card" style={{animationDelay:'.18s',marginBottom:28,padding:24}}>
           <div style={{display:'flex',flexWrap:'wrap',justifyContent:'space-between',gap:16,marginBottom:24}}>
             <div style={{flex:'1 1 260px',minWidth:0}}>
@@ -457,13 +467,13 @@ export default function Page() {
               <p style={{fontSize:'.78rem',fontWeight:700,color:'var(--ink-3)',marginBottom:10}}>Privacy you can trust</p>
               <div style={{display:'grid',gap:12}}>
                 <div style={{display:'flex',alignItems:'flex-start',gap:10}}>
-                  <span style={{fontSize:'1.2rem',lineHeight:1}}>🔒</span>
+                  <span style={{fontSize:'1.2rem',lineHeight:1}}>ðŸ”’</span>
                   <p style={{fontSize:'.92rem',color:'var(--ink-2)',lineHeight:1.6}}>
                     Analysed once and removed right after. No sharing.
                   </p>
                 </div>
                 <div style={{display:'flex',alignItems:'flex-start',gap:10}}>
-                  <span style={{fontSize:'1.2rem',lineHeight:1}}>🛡</span>
+                  <span style={{fontSize:'1.2rem',lineHeight:1}}>ðŸ›¡</span>
                   <p style={{fontSize:'.92rem',color:'var(--ink-2)',lineHeight:1.6}}>
                     EU servers, no humans read your letter, no hidden storage.
                   </p>
@@ -471,17 +481,17 @@ export default function Page() {
               </div>
             </div>
           </div>
-          <UploadZone onFile={handleFile} onText={handleText}/>
+          <UploadZone onFile={handleFile} onText={handleText} messages={messages}/>
 
           {selectedFile && (
             <div className="anim-up d2" style={{marginTop:24, padding:'18px', borderRadius:'20px', background:'var(--bg-card)', border:'1.5px solid var(--rim)', boxShadow:'var(--sh-sm)'}}>
               <div style={{display:'flex',alignItems:'center',gap:14,flexWrap:'wrap'}}>
                 <div style={{width:52,height:52,display:'grid',placeItems:'center',borderRadius:16,background:'var(--gold-4)',color:'var(--ink)'}}>
-                  <span style={{fontSize:'1.4rem'}}>📄</span>
+                  <span style={{fontSize:'1.4rem'}}>ðŸ“„</span>
                 </div>
                 <div style={{flex:'1 1 220px',minWidth:0}}>
                   <p style={{fontWeight:700,color:'var(--ink)',fontSize:'1rem',marginBottom:4,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{selectedFile.name}</p>
-                  <p style={{fontSize:'.85rem',color:'var(--ink-3)',lineHeight:1.6}}>{Math.round(selectedFile.size / 1024)} KB · {selectedFile.type || 'file'}</p>
+                  <p style={{fontSize:'.85rem',color:'var(--ink-3)',lineHeight:1.6}}>{Math.round(selectedFile.size / 1024)} KB Â· {selectedFile.type || 'file'}</p>
                 </div>
                 <button onClick={() => {
                     setSelectedFile(null)
@@ -499,14 +509,14 @@ export default function Page() {
                   <div style={{width:`${uploadProgress}%`,height:'100%',background:'linear-gradient(90deg,#f5c46b,#d7a741)',transition:'width .3s ease'}} />
                 </div>
                 <p style={{marginTop:10,fontSize:'.85rem',color:'var(--ink-3)'}}>
-                  {uploading ? `Uploading… ${uploadProgress}%` : 'Ready to continue to analysis.'}
+                  {uploading ? `Uploadingâ€¦ ${uploadProgress}%` : 'Ready to continue to analysis.'}
                 </p>
               </div>
             </div>
           )}
         </div>
 
-        <HowItWorks />
+        <HowItWorks messages={messages}/>
 
         <div className="anim-up" style={{animationDelay:'.38s'}}>
           <div style={{
@@ -547,10 +557,10 @@ export default function Page() {
               onMouseDown={e=>{e.currentTarget.style.transform='scale(.97)'}}
               onMouseUp={e=>{e.currentTarget.style.transform='scale(1)'}}
             >
-              <Camera size={20}/>📸 Take photo of your letter
+              <Camera size={20}/>ðŸ“¸ Take photo of your letter
             </button>
             <div style={{display:'flex',justifyContent:'center',gap:16,marginTop:14}}>
-              {[['✓','No signup'],['🔒','100% private'],['⚡','Free to start']].map(([ic,tx])=>(
+              {[['âœ“','No signup'],['ðŸ”’','100% private'],['âš¡','Free to start']].map(([ic,tx])=>(
                 <div key={tx} style={{display:'flex',alignItems:'center',gap:4}}>
                   <span style={{fontSize:'.82rem'}}>{ic}</span>
                   <span style={{fontSize:'.75rem',color:'rgba(240,237,228,.4)',fontWeight:500}}>{tx}</span>
@@ -560,9 +570,9 @@ export default function Page() {
           </div>
 
           <p style={{textAlign:'center',marginTop:16,fontSize:'.8rem',color:'var(--ink-3)',lineHeight:1.7}}>
-            Free · Personal €9/mo · Family €19/mo ·{' '}
+            Free Â· Personal â‚¬9/mo Â· Family â‚¬19/mo Â·{' '}
             <Link href="/register" style={{color:'var(--gold-4)',textDecoration:'none',fontWeight:600}}>
-              Create account →
+              Create account â†’
             </Link>
           </p>
         </div>
@@ -605,10 +615,10 @@ export default function Page() {
               onMouseDown={e=>{e.currentTarget.style.transform='scale(.97)'}}
               onMouseUp={e=>{e.currentTarget.style.transform='scale(1)'}}
             >
-              <Camera size={20}/>📸 {messages.upload.photo}
+              <Camera size={20}/>ðŸ“¸ {messages.upload.photo}
             </button>
             <div style={{display:'flex',justifyContent:'center',gap:16,marginTop:14}}>
-              {[['✓','No signup'],['🔒','100% private'],['⚡','Free to start']].map(([ic,tx])=>(
+              {[['âœ“','No signup'],['ðŸ”’','100% private'],['âš¡','Free to start']].map(([ic,tx])=>(
                 <div key={tx} style={{display:'flex',alignItems:'center',gap:4}}>
                   <span style={{fontSize:'.82rem'}}>{ic}</span>
                   <span style={{fontSize:'.75rem',color:'rgba(240,237,228,.4)',fontWeight:500}}>{tx}</span>
@@ -619,9 +629,9 @@ export default function Page() {
 
           {/* Pricing footnote */}
           <p style={{textAlign:'center',marginTop:16,fontSize:'.8rem',color:'var(--ink-3)',lineHeight:1.7}}>
-            Free · Personal €9/mo · Family €19/mo ·{' '}
+            Free Â· Personal â‚¬9/mo Â· Family â‚¬19/mo Â·{' '}
             <Link href="/register" style={{color:'var(--gold-4)',textDecoration:'none',fontWeight:600}}>
-              Create account →
+              Create account â†’
             </Link>
           </p>
         </div>
@@ -630,16 +640,22 @@ export default function Page() {
 
       <footer style={{borderTop:'1px solid var(--rim-2)',padding:'20px',textAlign:'center'}}>
         <p style={{fontSize:'.78rem',color:'var(--ink-3)',lineHeight:1.8}}>
-          © {new Date().getFullYear()} KontaktPilotAI &nbsp;·&nbsp;
-          <a href="/privacy" style={{color:'inherit',textDecoration:'none'}}>Privacy</a> &nbsp;·&nbsp;
-          <a href="/terms" style={{color:'inherit',textDecoration:'none'}}>Terms</a> &nbsp;·&nbsp;
+          Â© {new Date().getFullYear()} KontaktPilotAI &nbsp;Â·&nbsp;
+          <a href="/privacy" style={{color:'inherit',textDecoration:'none'}}>Privacy</a> &nbsp;Â·&nbsp;
+          <a href="/terms" style={{color:'inherit',textDecoration:'none'}}>Terms</a> &nbsp;Â·&nbsp;
           <a href="mailto:hello@kontaktpilot.ai" style={{color:'inherit',textDecoration:'none'}}>Contact</a>
-          <br/>🔒 Documents deleted after analysis · GDPR · EU servers
+          <br/>ðŸ”’ Documents deleted after analysis Â· GDPR Â· EU servers
         </p>
       </footer>
     </div>
   )
 }
+
+
+
+
+
+
 
 
 

@@ -1,0 +1,11 @@
+﻿{
+  "nav": { "letters": "Meine Briefe", "signin": "Anmelden" },
+  "hero": {
+    "title": "Verstehen Sie diesen Brief nicht?",
+    "subtitle": "Fotografieren Sie ihn und erhalten Sie eine einfache Erklärung. Strafen, Rechnungen, Mahnungen — einfach erklärt."
+  },
+  "badges": { "private": "Privat", "signup": "Keine Registrierung", "eu": "EU Server" },
+  "upload": { "section": "BRIEF HOCHLADEN", "description": "Foto, PDF oder Text.", "photo": "Foto aufnehmen", "upload": "Datei hochladen", "paste": "Text einfügen" },
+  "steps": { "oneTitle": "Brief hochladen", "oneText": "Foto, PDF oder Text", "twoTitle": "KI erklärt es", "twoText": "Was es bedeutet", "threeTitle": "Handeln", "threeText": "Antworten oder bezahlen" },
+  "footer": { "privacy": "Datenschutz", "terms": "Nutzungsbedingungen", "contact": "Kontakt" }
+}

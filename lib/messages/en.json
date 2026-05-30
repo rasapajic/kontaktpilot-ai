@@ -1,0 +1,11 @@
+﻿{
+  "nav": { "letters": "My letters", "signin": "Sign in" },
+  "hero": {
+    "title": "Don't understand this letter?",
+    "subtitle": "Take a photo and get a simple explanation. Fines, bills, reminders — explained simply."
+  },
+  "badges": { "private": "Private", "signup": "No signup needed", "eu": "EU servers" },
+  "upload": { "section": "UPLOAD YOUR LETTER", "description": "Photo, PDF or text.", "photo": "Take a photo", "upload": "Upload file", "paste": "Paste text" },
+  "steps": { "oneTitle": "Upload letter", "oneText": "Photo, PDF or text", "twoTitle": "AI explains it", "twoText": "What it means", "threeTitle": "Take action", "threeText": "Reply or pay" },
+  "footer": { "privacy": "Privacy", "terms": "Terms", "contact": "Contact" }
+}
