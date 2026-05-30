@@ -7,114 +7,106 @@ export const dynamic = 'force-dynamic'
 export async function POST(req: NextRequest) {
   try {
     const apiKey = process.env.OPENAI_API_KEY
-
     if (!apiKey) {
-      return NextResponse.json(
-        { error: 'OPENAI_API_KEY missing' },
-        { status: 500 }
-      )
+      return NextResponse.json({ error: 'OPENAI_API_KEY missing' }, { status: 500 })
     }
+    const openai = new OpenAI({ apiKey })
 
-    const openai = new OpenAI({
-      apiKey,
-    })
+    const formData = await req.formData()
+    const language = (formData.get('language') as string) || 'English'
+    const file     = formData.get('file') as File | null
+    const text     = formData.get('text') as string | null
 
-    const body = await req.json()
+    const JSON_SCHEMA = `{
+  "sender": "who sent this",
+  "summary": "1-2 sentence plain language summary",
+  "urgency": "none|low|medium|high|scam",
+  "deadline": "deadline text or null",
+  "documentLanguage": "language of the document",
+  "explanation": "plain language explanation for the recipient",
+  "nextStep": "the single most important thing to do",
+  "scamRisk": "none|low|medium|high",
+  "scamWarning": "warning text or null",
+  "scamIndicators": [],
+  "checklist": ["step1", "step2"],
+  "extractedDate": "YYYY-MM-DD or null",
+  "deadlineUrgency": "NONE|LOW|MEDIUM|HIGH|CRITICAL",
+  "daysRemaining": null
+}`
 
-    const action = body?.action
+    let messages: any[]
 
-    let systemPrompt = ''
-    let userPrompt = ''
-
-    if (action === 'reply') {
-      systemPrompt = 'Write professional email replies. Return JSON with subject and body.'
-
-      userPrompt = `
-Reply in ${body.language || 'German'}.
-
-Original:
-${body.email || ''}
-
-Instruction:
-${body.instruction || ''}
-`
-    } else if (action === 'generate') {
-      systemPrompt = 'Write professional emails. Return JSON with subject and body.'
-
-      userPrompt = `
-Write an email in ${body.language || 'German'}.
-
-Request:
-${body.request || ''}
-`
-    } else if (action === 'translate') {
-      systemPrompt = 'Translate text. Return JSON with translation and detectedLanguage.'
-
-      userPrompt = `
-Translate to ${body.to || 'English'}:
-
-${body.text || ''}
-`
-    const completion =
-  await openai.chat.completions.create({
-    model: 'gpt-4o-mini',
-    temperature: 0.3,
-    messages: [
-      {
-        role: 'system',
-        content: systemPrompt,
-      },
-      {
+    if (file) {
+      const buffer = Buffer.from(await file.arrayBuffer())
+      const base64 = buffer.toString('base64')
+      const mime   = file.type || 'image/jpeg'
+      messages = [{
         role: 'user',
-        content: userPrompt,
-      },
-    ],
-  })
-
-const content =
-  completion.choices?.[0]?.message?.content || '{}'
-
-let parsed
-
-try {
-  parsed = JSON.parse(content)
-} catch {
-  parsed = { raw: content }
-}
-
-return NextResponse.json(parsed)
-      
+        content: [
+          {
+            type: 'text',
+            text: `You are an expert at reading official letters and documents.
+Analyse this document and return ONLY valid JSON with these exact fields:
+${JSON_SCHEMA}
+Reply language for explanation and nextStep: ${language}`
+          },
+          {
+            type: 'image_url',
+            image_url: { url: `data:${mime};base64,${base64}`, detail: 'high' }
+          }
+        ]
+      }]
+    } else if (text) {
+      messages = [
+        {
+          role: 'system',
+          content: `You are an expert at reading official letters and documents.
+Analyse the text and return ONLY valid JSON with these exact fields:
+${JSON_SCHEMA}
+Reply language for explanation and nextStep: ${language}`
+        },
+        { role: 'user', content: text }
+      ]
+    } else {
+      return NextResponse.json({ error: 'No file or text provided' }, { status: 400 })
     }
 
-    const completion =
-      await openai.chat.completions.create({
-        model: 'gpt-4o-mini',
-        temperature: 0.3,
-        messages: [
-          {
-            role: 'system',
-            content: systemPrompt,
-          },
-          {
-            role: 'user',
-            content: userPrompt,
-          },
-        ],
-      })
-
-    const content =
-      completion.choices?.[0]?.message?.content || ''
-
-    return NextResponse.json({
-      result: content,
+    const model      = file ? 'gpt-4o' : 'gpt-4o-mini'
+    const completion = await openai.chat.completions.create({
+      model,
+      temperature: 0.1,
+      max_tokens:  1200,
+      messages,
     })
+
+    const raw   = completion.choices?.[0]?.message?.content || '{}'
+    const clean = raw.replace(/```json|```/g, '').trim()
+
+    let parsed: any
+    try {
+      parsed = JSON.parse(clean)
+    } catch {
+      parsed = {
+        sender:           'Unknown',
+        summary:          raw,
+        urgency:          'low',
+        deadline:         null,
+        documentLanguage: language,
+        explanation:      raw,
+        nextStep:         'Please review this document manually.',
+        scamRisk:         'none',
+        scamWarning:      null,
+        scamIndicators:   [],
+        checklist:        [],
+        extractedDate:    null,
+        deadlineUrgency:  'NONE',
+        daysRemaining:    null,
+      }
+    }
+
+    return NextResponse.json(parsed)
   } catch (error) {
     console.error('[AI_ROUTE_ERROR]', error)
-
-    return NextResponse.json(
-      { error: 'Something went wrong' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Something went wrong' }, { status: 500 })
   }
 }
-
